@@ -5,10 +5,16 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public abstract class UserDao {
+public class UserDao {
+
+    private SimpleConnectionMaker maker;
+
+    public UserDao(SimpleConnectionMaker maker) {
+        this.maker = maker;
+    }
 
     public void add (User user) throws SQLException, ClassNotFoundException {
-        Connection c = getConnection();
+        Connection c = maker.makeNewConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "insert into users(id,name,password) values(?,?,?)");
@@ -22,5 +28,4 @@ public abstract class UserDao {
         c.close();
     }
 
-    public abstract Connection getConnection() throws ClassNotFoundException,SQLException;
 }
