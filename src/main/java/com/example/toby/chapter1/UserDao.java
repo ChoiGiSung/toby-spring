@@ -5,34 +5,22 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 
-public class UserDao {
+public abstract class UserDao {
 
-    public void add(User user) throws ClassNotFoundException, SQLException {
-        Class.forName("org.h2.Driver");
-        Connection c = DriverManager.getConnection(
-                "jdbc:h2:~/toby","sa",""
-        );
+    public void add (User user) throws SQLException, ClassNotFoundException {
+        Connection c = getConnection();
 
         PreparedStatement ps = c.prepareStatement(
                 "insert into users(id,name,password) values(?,?,?)");
-                ps.setString(1,user.getId());
-                ps.setString(2, user.getName());
-                ps.setString(3, user.getPassword());
+        ps.setString(1,user.getId());
+        ps.setString(2, user.getName());
+        ps.setString(3, user.getPassword());
 
-                ps.execute();
+        ps.execute();
 
-                ps.close();
-                c.close();
+        ps.close();
+        c.close();
     }
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        UserDao userDao = new UserDao();
-
-        User user =new User();
-        user.setId("1");
-        user.setName("백기선");
-        user.setPassword("married");
-
-        userDao.add(user);
-    }
+    public abstract Connection getConnection() throws ClassNotFoundException,SQLException;
 }
