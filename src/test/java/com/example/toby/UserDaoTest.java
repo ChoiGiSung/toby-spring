@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.sql.SQLException;
 
@@ -58,7 +59,7 @@ public class UserDaoTest {
 
     @Test
     void getUserFailure() throws SQLException, ClassNotFoundException {
-        Assertions.assertThrows(Exception.class,() -> {
+        Assertions.assertThrows(EmptyResultDataAccessException.class,() -> {
             userDao.get("4");
         });
 
