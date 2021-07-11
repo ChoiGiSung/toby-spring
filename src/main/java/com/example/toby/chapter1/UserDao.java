@@ -1,9 +1,6 @@
 package com.example.toby.chapter1;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
 
 public class UserDao {
 
@@ -26,6 +23,29 @@ public class UserDao {
 
         ps.close();
         c.close();
+    }
+
+    public User get(String id) throws SQLException, ClassNotFoundException {
+        Connection c = maker.makeConnection();
+
+        PreparedStatement ps = c.prepareStatement(
+                "select * from users where id =?"
+        );
+        ps.setString(1,id);
+
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        User user = new User(
+                rs.getString("id"),
+                rs.getString("name"),
+                rs.getString("password")
+        );
+
+        rs.close();
+        ps.close();
+        c.close();
+
+        return user;
     }
 
 }
