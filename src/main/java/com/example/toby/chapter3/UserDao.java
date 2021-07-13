@@ -15,16 +15,14 @@ public abstract class UserDao {
         this.maker = maker;
     }
 
+
+    abstract protected PreparedStatement makeStatement(Connection c) throws SQLException;
+
     public void add(User user) throws SQLException, ClassNotFoundException {
+        AddStatement addStatement = new AddStatement(user);
         try (Connection c = maker.makeConnection();
-             PreparedStatement ps = c.prepareStatement(
-                     "insert into users(id,name,password) values(?,?,?)")) {
-            ps.setString(1, user.getId());
-            ps.setString(2, user.getName());
-            ps.setString(3, user.getPassword());
-
+             PreparedStatement ps = addStatement.makePreparedStatement(c)) {
             ps.execute();
-
         }
 
     }
@@ -73,6 +71,11 @@ public abstract class UserDao {
 
     }
 
-    abstract protected PreparedStatement makeStatement(Connection c) throws SQLException;
+    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException, ClassNotFoundException {
+        try (Connection c = maker.makeConnection();
+             PreparedStatement ps = stmt.makePreparedStatement(c)) {
+            ps.execute();
+        }
+    }
 
 }
