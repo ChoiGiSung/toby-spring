@@ -54,8 +54,9 @@ public abstract class UserDao {
     }
 
     public void deleteAll() throws SQLException, ClassNotFoundException {
+        StatementStrategy strategy = new DeleteAllStatement();
         try (Connection c = maker.makeConnection();
-             PreparedStatement ps = c.prepareStatement("delete from users")) {
+             PreparedStatement ps = strategy.makePreparedStatement(c)) {
             ps.execute();
         }
     }
@@ -72,6 +73,6 @@ public abstract class UserDao {
 
     }
 
-    abstract protected PreparedStatement makeStatement(Connection c)throws SQLException;
+    abstract protected PreparedStatement makeStatement(Connection c) throws SQLException;
 
 }
