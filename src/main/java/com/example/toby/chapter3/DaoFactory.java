@@ -12,7 +12,12 @@ public class DaoFactory {
 
     @Bean
     public UserDao userDao(){
-        return new UserDaoDeleteAll(connectionMaker());
+        return new UserDao(jdbcContext());
+    }
+
+    @Bean
+    public JdbcContext jdbcContext(){
+        return new JdbcContext(connectionMaker());
     }
 
     @Bean

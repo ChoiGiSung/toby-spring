@@ -7,24 +7,25 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public abstract class UserDao {
+public  class UserDao {
 
-    private ConnectionMaker maker;
+    private JdbcContext context;
 
-    public UserDao(ConnectionMaker maker) {
-        this.maker = maker;
+    public UserDao(JdbcContext context) {
+        this.context = context;
     }
 
-
-    abstract protected PreparedStatement makeStatement(Connection c) throws SQLException;
-
-    public void add(User user) throws SQLException, ClassNotFoundException {
-        AddStatement addStatement = new AddStatement(user);
-        try (Connection c = maker.makeConnection();
-             PreparedStatement ps = addStatement.makePreparedStatement(c)) {
-            ps.execute();
-        }
-
+    public void add(final User user) throws SQLException, ClassNotFoundException {
+        this.context.workWithStatementStrategy(new StatementStrategy() {
+            @Override
+            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                PreparedStatement ps = c.prepareStatement("insert into user values(?,?,?)");
+                ps.setString(1,user.getId());
+                ps.setString(2,user.getName());
+                ps.setString(3,user.getPassword());
+                return ps;
+            }
+        });
     }
 
     public User get(String id) throws SQLException, ClassNotFoundException {
@@ -52,11 +53,12 @@ public abstract class UserDao {
     }
 
     public void deleteAll() throws SQLException, ClassNotFoundException {
-        StatementStrategy strategy = new DeleteAllStatement();
-        try (Connection c = maker.makeConnection();
-             PreparedStatement ps = strategy.makePreparedStatement(c)) {
-            ps.execute();
-        }
+        this.context.workWithStatementStrategy(new StatementStrategy() {
+            @Override
+            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
+                return c.prepareStatement("delete from users");
+            }
+        });
     }
 
     public int getCount() throws SQLException, ClassNotFoundException {
@@ -71,11 +73,5 @@ public abstract class UserDao {
 
     }
 
-    public void jdbcContextWithStatementStrategy(StatementStrategy stmt) throws SQLException, ClassNotFoundException {
-        try (Connection c = maker.makeConnection();
-             PreparedStatement ps = stmt.makePreparedStatement(c)) {
-            ps.execute();
-        }
-    }
 
 }
