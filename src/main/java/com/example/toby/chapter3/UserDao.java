@@ -7,7 +7,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class UserDao {
+public abstract class UserDao {
 
     private ConnectionMaker maker;
 
@@ -71,5 +71,7 @@ public class UserDao {
         }
 
     }
+
+    abstract protected PreparedStatement makeStatement(Connection c)throws SQLException;
 
 }
