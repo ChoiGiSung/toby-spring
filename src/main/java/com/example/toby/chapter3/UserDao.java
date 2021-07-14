@@ -12,10 +12,22 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserDao {
 
     private JdbcTemplate template;
+    private RowMapper<User> userRowMapper =new RowMapper<User>() {
+        @Override
+        public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+            User user = new User(
+                    rs.getString("id"),
+                    rs.getString("name"),
+                    rs.getString("password"));
+            return user;
+        }
+    };
 
     public UserDao(DataSource dataSource) {
         template = new JdbcTemplate(dataSource);
@@ -37,18 +49,12 @@ public class UserDao {
 
     public User get(String id) throws SQLException, ClassNotFoundException {
         return template.queryForObject("select * from users where id =?",
-                new Object[]{id},
-                new RowMapper<User>() {
-                    @Override
-                    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
+                new Object[]{id},userRowMapper
+                );
+    }
 
-                        User user = new User(
-                                rs.getString("id"),
-                                rs.getString("name"),
-                                rs.getString("password"));
-                        return user;
-                    }
-                });
+    public List<User> getAll(){
+        return this.template.query("select * from users order by id",userRowMapper);
     }
 
     public void deleteAll() throws SQLException, ClassNotFoundException {
