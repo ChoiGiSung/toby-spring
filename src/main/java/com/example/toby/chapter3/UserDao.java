@@ -30,7 +30,7 @@ public  class UserDao {
 
     public User get(String id) throws SQLException, ClassNotFoundException {
 
-        try (Connection c = maker.makeConnection();
+        try (Connection c = context.getMaker().makeConnection();
              PreparedStatement ps = c.prepareStatement(
                      "select * from users where id =?")) {
             ps.setString(1, id);
@@ -53,17 +53,12 @@ public  class UserDao {
     }
 
     public void deleteAll() throws SQLException, ClassNotFoundException {
-        this.context.workWithStatementStrategy(new StatementStrategy() {
-            @Override
-            public PreparedStatement makePreparedStatement(Connection c) throws SQLException {
-                return c.prepareStatement("delete from users");
-            }
-        });
+        this.context.executeSql("delete from users");
     }
 
     public int getCount() throws SQLException, ClassNotFoundException {
 
-        try (Connection c = maker.makeConnection();
+        try (Connection c = context.getMaker().makeConnection();
              PreparedStatement ps = c.prepareStatement("select count(*) from users");
              ResultSet rs = ps.executeQuery()) {
             rs.next();
