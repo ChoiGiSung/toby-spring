@@ -5,6 +5,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.PreparedStatementCreator;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.jdbc.core.RowMapper;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -35,31 +36,19 @@ public class UserDao {
     }
 
     public User get(String id) throws SQLException, ClassNotFoundException {
-        return template.query(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                PreparedStatement ps = con.prepareStatement("select * from users where id =?");
-                ps.setString(1, id);
-                return ps;
-            }
-        }, new ResultSetExtractor<User>() {
-            @Override
-            public User extractData(ResultSet rs) throws SQLException, DataAccessException {
-                User user = null;
-                if (rs.next()) {
-                    user = new User(
-                            rs.getString("id"),
-                            rs.getString("name"),
-                            rs.getString("password")
-                    );
-                }
-                if (user == null) {
-                    throw new EmptyResultDataAccessException(1);
-                }
+        return template.queryForObject("select * from users where id =?",
+                new Object[]{id},
+                new RowMapper<User>() {
+                    @Override
+                    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-                return user;
-            }
-        });
+                        User user = new User(
+                                rs.getString("id"),
+                                rs.getString("name"),
+                                rs.getString("password"));
+                        return user;
+                    }
+                });
     }
 
     public void deleteAll() throws SQLException, ClassNotFoundException {
@@ -72,21 +61,7 @@ public class UserDao {
     }
 
     public int getCount() throws SQLException, ClassNotFoundException {
-        return template.query(new PreparedStatementCreator() {
-            @Override
-            public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-
-                return con.prepareStatement("select count(*) from users");
-            }
-        }, new ResultSetExtractor<Integer>() {
-            @Override
-            public Integer extractData(ResultSet rs) throws SQLException, DataAccessException {
-                rs.next();
-                int count = rs.getInt(1);
-                return count;
-            }
-        });
-
+        return template.queryForObject("select count(*) from users", Integer.class);
     }
 
 
