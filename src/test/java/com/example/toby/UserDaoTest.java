@@ -1,8 +1,10 @@
 package com.example.toby;
 
-import com.example.toby.chapter2.DaoFactory;
-import com.example.toby.chapter2.User;
-import com.example.toby.chapter2.UserDao;
+import com.example.toby.chapter5.DaoFactory;
+import com.example.toby.chapter5.Level;
+import com.example.toby.chapter5.User;
+import com.example.toby.chapter5.UserDao;
+import com.example.toby.chapter5.UserDaoJdbc;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -17,7 +19,7 @@ import static org.assertj.core.api.Assertions.*;
 public class UserDaoTest {
 
     private ApplicationContext context = new AnnotationConfigApplicationContext(DaoFactory.class);
-    private UserDao userDao = context.getBean("userDao",UserDao.class);
+    private UserDaoJdbc userDao = context.getBean("userDao",UserDaoJdbc.class);
 
     @BeforeEach
     void deleteAll() throws SQLException, ClassNotFoundException {
@@ -65,8 +67,35 @@ public class UserDaoTest {
 
     }
 
-    User user(String id){
-        return new User(id,"name","password");
+    @Test
+    void update(){
+        userDao.deleteAll();
+
+        User user = user("1");
+        userDao.add(user);
+
+        user.setLevel(Level.GOLD);
+        user.setLogin(1000);
+        user.setRecommend(999);
+
+        userDao.update(user);
+
+        User updateUser = userDao.get(user.getId());
+
+        checkSameUser(user,updateUser);
+    }
+
+    private void checkSameUser(User user, User updateUser) {
+        assertThat(user.getId()).isEqualTo(updateUser.getId());
+        assertThat(user.getName()).isEqualTo(updateUser.getName());
+        assertThat(user.getPassword()).isEqualTo(updateUser.getPassword());
+        assertThat(user.getLogin()).isEqualTo(updateUser.getLogin());
+        assertThat(user.getRecommend()).isEqualTo(updateUser.getRecommend());
+        assertThat(user.getLevel()).isEqualTo(updateUser.getLevel());
+    }
+
+    private User user(String id){
+        return new User(id,"name","password", Level.BASIC,1,0);
     }
 
 }
