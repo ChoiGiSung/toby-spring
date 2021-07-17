@@ -76,6 +76,9 @@ public class User {
     }
 
     public void upgradeLevel() {
+        //앞단에서 canUpgrade가 실행되어야한다.
+        //그래도 스스로 검증방어를 할 수 있어야 한다.
+        //해당 예외는 발생하는게 맞으니까.
         Level nextLevel = this.level.nextLevel();
         if(nextLevel == null){
             throw new IllegalStateException(this.level+"은 업데이트 불가능");
