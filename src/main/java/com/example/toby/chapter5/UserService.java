@@ -3,6 +3,10 @@ package com.example.toby.chapter5;
 import java.util.List;
 
 public class UserService {
+
+    public static final int MIN_LOG_COUNT_FOR_SILVER = 50;
+    public static final int MIN_RECCOMEND_COUNT_FOR_GOLD = 30;
+
     UserDao userDao;
 
     public UserService(UserDao userDao) {
@@ -33,8 +37,8 @@ public class UserService {
     private boolean canUpgradeLevel(User user) {
         Level level = user.getLevel();
         switch (level){
-            case BASIC:return (user.getLogin() >= 50);
-            case SILVER:return (user.getRecommend() >= 30);
+            case BASIC:return (user.getLogin() >= MIN_LOG_COUNT_FOR_SILVER);
+            case SILVER:return (user.getRecommend() >= MIN_RECCOMEND_COUNT_FOR_GOLD);
             case GOLD:return false;
             default: throw new IllegalArgumentException("알 수 없는 레벨"+level);
         }
