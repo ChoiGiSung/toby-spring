@@ -28,7 +28,7 @@ public class UserService {
         }
     }
 
-    private void upgradeLevel(User user) {
+    protected void upgradeLevel(User user) {
         upgradePolicy.upgradeLevel(user);
     }
 
@@ -37,5 +37,23 @@ public class UserService {
     //https://stackoverflow.com/questions/2597219/is-it-a-good-idea-to-migrate-business-logic-code-into-our-domain-model
     private boolean canUpgradeLevel(User user) {
         return upgradePolicy.canUpgradeLevel(user);
+    }
+
+    static class TestUserService extends UserService{
+
+        private String id = "4";
+
+        public TestUserService(UserDao userDao, UserLevelUpgradePolicy upgradePolicy) {
+            super(userDao, upgradePolicy);
+        }
+
+        @Override
+        protected void upgradeLevel(User user) {
+            System.out.println(user.getId());
+            if(user.getId().equals(id)){
+                throw new TestUserServiceException();
+            }
+            super.upgradeLevel(user);
+        }
     }
 }

@@ -34,4 +34,9 @@ public class DaoFactory {
         );
     }
 
+    @Bean
+    public UserService.TestUserService testUserService(){
+        return new UserService.TestUserService(userDao(),userLevelUpgradePolicy());
+    }
+
 }

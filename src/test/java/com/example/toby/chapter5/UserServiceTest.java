@@ -13,6 +13,7 @@ import java.util.List;
 import static com.example.toby.chapter5.UserService.MIN_LOG_COUNT_FOR_SILVER;
 import static com.example.toby.chapter5.UserService.MIN_RECCOMEND_COUNT_FOR_GOLD;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.fail;
 import static org.assertj.core.api.InstanceOfAssertFactories.PATH;
 
 @SpringBootTest
@@ -20,6 +21,9 @@ public class UserServiceTest {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    UserService.TestUserService testUserService;
 
     UserDao userDao;
     List<User> users;
@@ -55,6 +59,22 @@ public class UserServiceTest {
         checkLevelUpgraded(users.get(2), false);
         checkLevelUpgraded(users.get(3), true);
         checkLevelUpgraded(users.get(4), false);
+    }
+
+    @Test
+    void upgradeAllOrNothing(){
+        userDao.deleteAll();
+        for (User user : users) {
+            userDao.add(user);
+        }
+
+        try {
+            testUserService.upgradeLevels();
+            fail("예외 왜 안터짐?");
+        }catch (TestUserServiceException e){
+
+        }
+        checkLevelUpgraded(users.get(1),false);
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
