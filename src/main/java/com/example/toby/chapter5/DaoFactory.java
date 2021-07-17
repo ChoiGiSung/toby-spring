@@ -15,7 +15,11 @@ public class DaoFactory {
 
     @Bean
     public UserService userService(){
-        return new UserService(userDao());
+        return new UserService(userDao(),userLevelUpgradePolicy());
+    }
+
+    @Bean UserLevelUpgradePolicy userLevelUpgradePolicy(){
+        return new UserLevelDefaultPolicy(userDao());
     }
 
     @Bean
