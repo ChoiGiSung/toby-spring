@@ -1,11 +1,14 @@
 package com.example.toby.chapter5;
 
 public enum Level{
-    BASIC(1),SILVER(2),GOLD(3);
-    private final int value;
+    GOLD(3,null),SILVER(2,GOLD),BASIC(1,SILVER);
 
-    Level(int value) {
+    private final int value;
+    private final Level next;
+
+    Level(int value, Level next) {
         this.value = value;
+        this.next = next;
     }
 
     public int getValue() {
@@ -19,5 +22,9 @@ public enum Level{
             case 3:return GOLD;
             default:throw new AssertionError("알 수 없음"+value);
         }
+    }
+
+    public Level nextLevel() {
+        return this.next;
     }
 }
