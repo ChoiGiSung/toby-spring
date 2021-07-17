@@ -3,7 +3,6 @@ package com.example.toby;
 import com.example.toby.chapter5.DaoFactory;
 import com.example.toby.chapter5.Level;
 import com.example.toby.chapter5.User;
-import com.example.toby.chapter5.UserDao;
 import com.example.toby.chapter5.UserDaoJdbc;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

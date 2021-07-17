@@ -13,9 +13,13 @@ import javax.sql.DataSource;
 @Configuration
 public class DaoFactory {
 
+    @Bean
+    public UserService userService(){
+        return new UserService(userDao());
+    }
 
     @Bean
-    public UserDaoJdbc userDao(){
+    public UserDao userDao(){
         return new UserDaoJdbc(dataSource());
     }
 
