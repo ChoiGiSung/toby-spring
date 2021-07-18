@@ -1,10 +1,24 @@
 package com.example.toby.chapter5;
 
+
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
+
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Session;
+import javax.mail.Transport;
+import javax.mail.internet.AddressException;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
+import java.util.Properties;
+
 import static com.example.toby.chapter5.UserService.MIN_LOG_COUNT_FOR_SILVER;
 import static com.example.toby.chapter5.UserService.MIN_RECCOMEND_COUNT_FOR_GOLD;
 
 public class UserLevelDefaultPolicy implements UserLevelUpgradePolicy{
 
+    private MailSender mailSender;
     UserDao userDao;
 
     public UserLevelDefaultPolicy(UserDao userDao) {
@@ -14,6 +28,17 @@ public class UserLevelDefaultPolicy implements UserLevelUpgradePolicy{
     public void upgradeLevel(User user) {
         user.upgradeLevel();
         userDao.update(user);
+        sendUpgradeEmail(user);
+    }
+
+    private void sendUpgradeEmail(User user) {
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(user.getEmail());
+        mailMessage.setFrom("useradmin@ksug.org");
+        mailMessage.setSubject("Upgrade 안내");
+        mailMessage.setText("사용잔미의 등급이"+user.getLevel().name());
+
+        this.mailSender.send(mailMessage);
     }
 
     // DDD 개념을 적용시키면 일부를 user 도메인으로 옮길 수 있다.
@@ -27,5 +52,9 @@ public class UserLevelDefaultPolicy implements UserLevelUpgradePolicy{
             case GOLD:return false;
             default: throw new IllegalArgumentException("알 수 없는 레벨"+level);
         }
+    }
+
+    public void setMailSender(MailSender mailSender) {
+        this.mailSender = mailSender;
     }
 }

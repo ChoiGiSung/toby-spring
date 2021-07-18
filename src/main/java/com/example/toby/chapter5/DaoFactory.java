@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
@@ -30,7 +32,9 @@ public class DaoFactory {
     }
 
     @Bean UserLevelUpgradePolicy userLevelUpgradePolicy(){
-        return new UserLevelDefaultPolicy(userDao());
+        UserLevelDefaultPolicy userLevelDefaultPolicy = new UserLevelDefaultPolicy(userDao());
+        userLevelDefaultPolicy.setMailSender(mailSender());
+        return userLevelDefaultPolicy;
     }
 
     @Bean
@@ -48,6 +52,11 @@ public class DaoFactory {
     @Bean
     public UserService.TestUserService testUserService(){
         return new UserService.TestUserService(platformTransactionManager(),userDao(),userLevelUpgradePolicy());
+    }
+
+    @Bean
+    public MailSender mailSender(){
+        return new DummyMailSender();
     }
 
 }
