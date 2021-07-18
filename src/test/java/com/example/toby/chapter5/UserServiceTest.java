@@ -24,7 +24,7 @@ public class UserServiceTest {
     UserService userService;
 
     @Autowired
-    DataSource dataSource
+    DataSource dataSource;
 
     @Autowired
     UserService.TestUserService testUserService;
@@ -42,7 +42,7 @@ public class UserServiceTest {
                 new User("5", "name5", "password", Level.GOLD, 100, Integer.MAX_VALUE)
         );
         userDao = userService.getUserDao();
-        userService.setDataSource(dataSource);
+        testUserService.setDataSource(dataSource);
     }
 
     @Test

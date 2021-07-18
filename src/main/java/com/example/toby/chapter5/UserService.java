@@ -5,7 +5,6 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
 public class UserService {
@@ -27,7 +26,7 @@ public class UserService {
     }
 
     public void upgradeLevels() throws Exception {
-
+        System.out.println(dataSource);
         TransactionSynchronizationManager.initSynchronization();
         Connection c = DataSourceUtils.getConnection(dataSource);
         c.setAutoCommit(false);
