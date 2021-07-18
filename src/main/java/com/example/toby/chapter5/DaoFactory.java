@@ -56,7 +56,9 @@ public class DaoFactory {
 
     @Bean
     public MailSender mailSender(){
-        return new DummyMailSender();
+//        return new DummyMailSender();
+        return new UserService.TestUserService.MockMailSender();
     }
+
 
 }

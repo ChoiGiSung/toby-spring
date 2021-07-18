@@ -1,6 +1,9 @@
 package com.example.toby.chapter5;
 
 import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.mail.MailException;
+import org.springframework.mail.MailSender;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
@@ -8,6 +11,7 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserService {
@@ -74,6 +78,25 @@ public class UserService {
                 throw new TestUserServiceException();
             }
             super.upgradeLevel(user);
+        }
+
+        static class MockMailSender implements MailSender{
+
+            private List<String> requests = new ArrayList<>();
+
+            @Override
+            public void send(SimpleMailMessage simpleMessage) throws MailException {
+                requests.add(simpleMessage.getTo()[0]);//전송요청을 받은 이메일 주소 0번만 저장
+            }
+
+            @Override
+            public void send(SimpleMailMessage... simpleMessages) throws MailException {
+
+            }
+
+            public List<String> getRequests() {
+                return requests;
+            }
         }
     }
 }

@@ -6,6 +6,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.test.annotation.DirtiesContext;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -28,6 +31,9 @@ public class UserServiceTest {
 
     @Autowired
     UserService.TestUserService testUserService;
+
+    @Autowired
+    ApplicationContext context;
 
     UserDao userDao;
     List<User> users;
@@ -81,6 +87,31 @@ public class UserServiceTest {
         checkLevelUpgraded(users.get(1),false);
     }
 
+    @Test
+    @DirtiesContext
+    void upgradeLevelsDummyMailSender() throws Exception {
+        userDao.deleteAll();
+        for (User user : users) {
+            userDao.add(user);
+        }
+
+        UserService.TestUserService.MockMailSender mailSender = context.getBean("mailSender", UserService.TestUserService.MockMailSender.class);
+        //DI로 인해 set이 불가능 , 빈 생성시 변경해줬다.
+
+        userService.upgradeLevels();
+
+        checkLevelUpgraded(users.get(0),false);
+        checkLevelUpgraded(users.get(1),true);
+        checkLevelUpgraded(users.get(2),false);
+        checkLevelUpgraded(users.get(3),true);
+        checkLevelUpgraded(users.get(4),false);
+
+        List<String> request = mailSender.getRequests();
+        assertThat(2).isEqualTo(request.size());
+        assertThat(users.get(1).getEmail()).isEqualTo(request.get(0));
+        assertThat(users.get(3).getEmail()).isEqualTo(request.get(1));
+    }
+
     private void checkLevelUpgraded(User user, boolean upgraded) {
         User updateUser = userDao.get(user.getId());
         if(upgraded){
@@ -89,4 +120,5 @@ public class UserServiceTest {
             assertThat(user.getLevel()).isEqualTo(updateUser.getLevel());
         }
     }
+
 }
