@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.List;
 
@@ -21,6 +22,9 @@ public class UserServiceTest {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    DataSource dataSource
 
     @Autowired
     UserService.TestUserService testUserService;
@@ -38,6 +42,7 @@ public class UserServiceTest {
                 new User("5", "name5", "password", Level.GOLD, 100, Integer.MAX_VALUE)
         );
         userDao = userService.getUserDao();
+        userService.setDataSource(dataSource);
     }
 
     @Test
@@ -46,7 +51,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void upgradeLevels() {
+    void upgradeLevels() throws Exception {
         userDao.deleteAll();
         for (User user : users) {
             userDao.add(user);
@@ -62,7 +67,7 @@ public class UserServiceTest {
     }
 
     @Test
-    void upgradeAllOrNothing(){
+    void upgradeAllOrNothing() throws Exception {
         userDao.deleteAll();
         for (User user : users) {
             userDao.add(user);

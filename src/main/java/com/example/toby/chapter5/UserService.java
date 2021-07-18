@@ -1,5 +1,11 @@
 package com.example.toby.chapter5;
 
+import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 public class UserService {
@@ -9,6 +15,7 @@ public class UserService {
 
     UserDao userDao;
     UserLevelUpgradePolicy upgradePolicy;
+    DataSource dataSource;
 
     public UserService(UserDao userDao, UserLevelUpgradePolicy upgradePolicy) {
         this.userDao = userDao;
@@ -19,13 +26,33 @@ public class UserService {
         return userDao;
     }
 
-    public void upgradeLevels() {
-        List<User> users = userDao.getAll();
-        for (User user : users) {
-            if (canUpgradeLevel(user)) {
-                upgradeLevel(user);
+    public void upgradeLevels() throws Exception {
+
+        TransactionSynchronizationManager.initSynchronization();
+        Connection c = DataSourceUtils.getConnection(dataSource);
+        c.setAutoCommit(false);
+
+        try {
+            List<User> users = userDao.getAll();
+            for (User user : users) {
+                if (canUpgradeLevel(user)) {
+                    upgradeLevel(user);
+                }
             }
+            c.commit();
+        }catch (Exception e){
+            c.rollback();
+            throw e;
+        }finally {
+            DataSourceUtils.releaseConnection(c,dataSource);
+            TransactionSynchronizationManager.unbindResource(this.dataSource);
+            TransactionSynchronizationManager.clearSynchronization();
         }
+
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     protected void upgradeLevel(User user) {
