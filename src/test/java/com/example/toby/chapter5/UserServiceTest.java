@@ -42,7 +42,6 @@ public class UserServiceTest {
                 new User("5", "name5", "password", Level.GOLD, 100, Integer.MAX_VALUE)
         );
         userDao = userService.getUserDao();
-        testUserService.setDataSource(dataSource);
     }
 
     @Test
