@@ -94,7 +94,7 @@ public class UserDaoTest {
     }
 
     private User user(String id){
-        return new User(id,"name","password", Level.BASIC,1,0);
+        return new User(id,"name","password", Level.BASIC,1,0,"sample@sda.com");
     }
 
 }

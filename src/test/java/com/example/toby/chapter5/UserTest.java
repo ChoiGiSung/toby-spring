@@ -13,7 +13,7 @@ public class UserTest {
 
     @BeforeEach
     void setUp(){
-        user = new User("1","name","password",Level.BASIC,30,30);
+        user = new User("1","name","password",Level.BASIC,30,30,"sam@ple.com");
     }
 
     @Test
