@@ -1,4 +1,4 @@
-package com.example.toby.chapter6;
+package com.example.toby.chapter6.mock;
 
 import org.springframework.mail.MailException;
 import org.springframework.mail.MailSender;

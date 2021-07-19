@@ -1,6 +1,7 @@
-package com.example.toby.chapter6.chapter5;
+package com.example.toby.chapter6;
 
 import com.example.toby.chapter6.*;
+import com.example.toby.chapter6.mock.MockUserDao;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,18 +55,29 @@ public class UserServiceTest {
 
     @Test
     void upgradeLevels() throws Exception {
-        userDao.deleteAll();
-        for (User user : users) {
-            userDao.add(user);
-        }
 
-        userServiceTx.upgradeLevels();
+        MockUserDao mockUserDao = new MockUserDao(users);
+        UserServiceImpl.TestUserService.MockMailSender mailSender = new UserServiceImpl.TestUserService.MockMailSender();
+        UserLevelDefaultPolicy defaultPolicy = new UserLevelDefaultPolicy(mailSender,mockUserDao);
+        UserServiceImpl userService = new UserServiceImpl();
+        userService.setUserDao(mockUserDao);
+        userService.setUpgradePolicy(defaultPolicy);
 
-        checkLevelUpgraded(users.get(0), false);
-        checkLevelUpgraded(users.get(1), true);
-        checkLevelUpgraded(users.get(2), false);
-        checkLevelUpgraded(users.get(3), true);
-        checkLevelUpgraded(users.get(4), false);
+        userService.upgradeLevels();
+        List<User> updated = mockUserDao.getUpdated();
+        assertThat(2).isEqualTo(updated.size());
+        checkUserAndLevel(updated.get(0),"2",Level.SILVER);
+        checkUserAndLevel(updated.get(1),"4",Level.GOLD);
+
+        List<String> requests = mailSender.getRequests();
+        assertThat(2).isEqualTo(requests.size());
+        assertThat(users.get(1).getEmail()).isEqualTo(requests.get(0));
+        assertThat(users.get(3).getEmail()).isEqualTo(requests.get(1));
+    }
+
+    private void checkUserAndLevel(User user, String expectedId, Level silver) {
+        assertThat(expectedId).isEqualTo(user.getId());
+        assertThat(silver).isEqualTo(user.getLevel());
     }
 
     @Test

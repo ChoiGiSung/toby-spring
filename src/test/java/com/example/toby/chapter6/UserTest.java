@@ -1,4 +1,4 @@
-package com.example.toby.chapter6.chapter5;
+package com.example.toby.chapter6;
 
 import com.example.toby.chapter6.Level;
 import com.example.toby.chapter6.User;

@@ -16,6 +16,11 @@ public class UserLevelDefaultPolicy implements UserLevelUpgradePolicy {
         this.userDao = userDao;
     }
 
+    public UserLevelDefaultPolicy(MailSender mailSender, UserDao userDao) {
+        this.mailSender = mailSender;
+        this.userDao = userDao;
+    }
+
     public void upgradeLevel(User user) {
         user.upgradeLevel();
         userDao.update(user);

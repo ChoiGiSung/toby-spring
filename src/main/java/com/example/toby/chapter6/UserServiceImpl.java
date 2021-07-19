@@ -18,10 +18,14 @@ public class UserServiceImpl implements UserService {
     UserDao userDao;
     UserLevelUpgradePolicy upgradePolicy;
 
+    public UserServiceImpl() {
+    }
+
     public UserServiceImpl(UserDao userDao, UserLevelUpgradePolicy upgradePolicy) {
         this.userDao = userDao;
         this.upgradePolicy = upgradePolicy;
     }
+
 
     public UserDao getUserDao() {
         return userDao;
@@ -41,7 +45,6 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-
     protected void upgradeLevel(User user) {
         upgradePolicy.upgradeLevel(user);
     }
@@ -53,6 +56,13 @@ public class UserServiceImpl implements UserService {
         return upgradePolicy.canUpgradeLevel(user);
     }
 
+    public void setUserDao(UserDao userDao) {
+        this.userDao = userDao;
+    }
+
+    public void setUpgradePolicy(UserLevelUpgradePolicy upgradePolicy) {
+        this.upgradePolicy = upgradePolicy;
+    }
 
     public static class TestUserService extends UserServiceImpl {
 
