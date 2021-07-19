@@ -25,8 +25,8 @@ public class DaoFactory {
     }
 
     @Bean
-    public UserService userService(){
-        return new UserService(platformTransactionManager(),userDao(),userLevelUpgradePolicy());
+    public UserServiceImpl userService(){
+        return new UserServiceImpl(platformTransactionManager(),userDao(),userLevelUpgradePolicy());
     }
 
     @Bean
@@ -49,14 +49,14 @@ public class DaoFactory {
     }
 
     @Bean
-    public UserService.TestUserService testUserService(){
-        return new UserService.TestUserService(platformTransactionManager(),userDao(),userLevelUpgradePolicy());
+    public UserServiceImpl.TestUserService testUserService(){
+        return new UserServiceImpl.TestUserService(platformTransactionManager(),userDao(),userLevelUpgradePolicy());
     }
 
     @Bean
     public MailSender mailSender(){
 //        return new DummyMailSender();
-        return new UserService.TestUserService.MockMailSender();
+        return new UserServiceImpl.TestUserService.MockMailSender();
     }
 
 

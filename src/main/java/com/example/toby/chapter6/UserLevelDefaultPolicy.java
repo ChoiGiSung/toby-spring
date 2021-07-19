@@ -4,8 +4,8 @@ package com.example.toby.chapter6;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
 
-import static com.example.toby.chapter6.UserService.MIN_LOG_COUNT_FOR_SILVER;
-import static com.example.toby.chapter6.UserService.MIN_RECCOMEND_COUNT_FOR_GOLD;
+import static com.example.toby.chapter6.UserServiceImpl.MIN_LOG_COUNT_FOR_SILVER;
+import static com.example.toby.chapter6.UserServiceImpl.MIN_RECCOMEND_COUNT_FOR_GOLD;
 
 public class UserLevelDefaultPolicy implements UserLevelUpgradePolicy {
 
