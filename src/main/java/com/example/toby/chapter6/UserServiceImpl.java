@@ -15,12 +15,10 @@ public class UserServiceImpl implements UserService {
     public static final int MIN_LOG_COUNT_FOR_SILVER = 50;
     public static final int MIN_RECCOMEND_COUNT_FOR_GOLD = 30;
 
-    private PlatformTransactionManager transactionManager;
     UserDao userDao;
     UserLevelUpgradePolicy upgradePolicy;
 
-    public UserServiceImpl(PlatformTransactionManager transactionManager, UserDao userDao, UserLevelUpgradePolicy upgradePolicy) {
-        this.transactionManager = transactionManager;
+    public UserServiceImpl(UserDao userDao, UserLevelUpgradePolicy upgradePolicy) {
         this.userDao = userDao;
         this.upgradePolicy = upgradePolicy;
     }
@@ -56,12 +54,12 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    static class TestUserService extends UserServiceImpl {
+    public static class TestUserService extends UserServiceImpl {
 
         private String id = "4";
 
-        public TestUserService(PlatformTransactionManager transactionManager, UserDao userDao, UserLevelUpgradePolicy upgradePolicy) {
-            super(transactionManager, userDao, upgradePolicy);
+        public TestUserService( UserDao userDao, UserLevelUpgradePolicy upgradePolicy) {
+            super(userDao, upgradePolicy);
         }
 
         @Override
@@ -73,7 +71,7 @@ public class UserServiceImpl implements UserService {
             super.upgradeLevel(user);
         }
 
-        static class MockMailSender implements MailSender {
+        public static class MockMailSender implements MailSender {
 
             private List<String> requests = new ArrayList<>();
 
