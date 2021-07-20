@@ -10,6 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
@@ -91,43 +92,22 @@ public class UserServiceTest {
 
     @Test
     void upgradeAllOrNothing() throws Exception {
-        userDao.deleteAll();
-        for (User user : users) {
-            userDao.add(user);
-        }
+        UserDao mockUserDao = mock(UserDao.class);
+        when(mockUserDao.getAll()).thenReturn(users);
 
+        UserServiceImpl.TestUserService.MockMailSender mockMailSender = mock(UserServiceImpl.TestUserService.MockMailSender.class);
+        UserLevelDefaultPolicy defaultPolicy = new UserLevelDefaultPolicy(mockMailSender,mockUserDao);
+        UserServiceImpl.TestUserService userService = new UserServiceImpl.TestUserService(mockUserDao,defaultPolicy);
+        PlatformTransactionManager manager = mock(PlatformTransactionManager.class);
+
+        UserServiceTx userServiceTx = new UserServiceTx(userService,manager);
         try {
-            testUserServiceTx.upgradeLevels();
+            userServiceTx.upgradeLevels();
             fail("예외 왜 안터짐?");
         }catch (TestUserServiceException e){
 
         }
-        checkLevelUpgraded(users.get(1),false);
-    }
-
-    @Test
-    @DirtiesContext
-    void upgradeLevelsDummyMailSender() throws Exception {
-        userDao.deleteAll();
-        for (User user : users) {
-            userDao.add(user);
-        }
-
-        UserServiceImpl.TestUserService.MockMailSender mailSender = context.getBean("mailSender", UserServiceImpl.TestUserService.MockMailSender.class);
-        //DI로 인해 set이 불가능 , 빈 생성시 변경해줬다.
-
-        userServiceTx.upgradeLevels();
-
-        checkLevelUpgraded(users.get(0),false);
-        checkLevelUpgraded(users.get(1),true);
-        checkLevelUpgraded(users.get(2),false);
-        checkLevelUpgraded(users.get(3),true);
-        checkLevelUpgraded(users.get(4),false);
-
-        List<String> request = mailSender.getRequests();
-        assertThat(2).isEqualTo(request.size());
-        assertThat(users.get(1).getEmail()).isEqualTo(request.get(0));
-        assertThat(users.get(3).getEmail()).isEqualTo(request.get(1));
+        verify(manager,times(1)).rollback(any());
     }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
