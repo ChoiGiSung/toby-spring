@@ -3,11 +3,13 @@ package com.example.toby.chapter6;
 import com.example.toby.chapter6.proxy.Hello;
 import com.example.toby.chapter6.proxy.HelloTarget;
 import com.example.toby.chapter6.proxy.HelloUppercase;
+import com.example.toby.chapter6.proxy.UppercaseHandler;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,5 +37,11 @@ public class ReflectionTest {
 
         Hello helloUppercase = new HelloUppercase(hello);
         assertThat("HELLO SAMPLE").isEqualTo(helloUppercase.sayHello("sample"));
+
+        Hello proxyInstance = (Hello) Proxy.newProxyInstance(
+                getClass().getClassLoader(),
+                new Class[]{Hello.class},
+                new UppercaseHandler(new HelloTarget())
+        );
     }
 }
