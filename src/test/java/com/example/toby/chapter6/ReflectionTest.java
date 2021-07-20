@@ -1,5 +1,8 @@
 package com.example.toby.chapter6;
 
+import com.example.toby.chapter6.proxy.Hello;
+import com.example.toby.chapter6.proxy.HelloTarget;
+import com.example.toby.chapter6.proxy.HelloUppercase;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -23,5 +26,14 @@ public class ReflectionTest {
         Method charAtMethod = String.class.getMethod("charAt", int.class);
 
         assertThat('S').isEqualTo(charAtMethod.invoke(name,0));
+    }
+
+    @Test
+    void simpleProxy(){
+        Hello hello = new HelloTarget();
+        assertThat("Hello sample").isEqualTo(hello.sayHello("sample"));
+
+        Hello helloUppercase = new HelloUppercase(hello);
+        assertThat("HELLO SAMPLE").isEqualTo(helloUppercase.sayHello("sample"));
     }
 }
