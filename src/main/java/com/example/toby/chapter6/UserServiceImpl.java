@@ -40,6 +40,7 @@ public class UserServiceImpl implements UserService {
         List<User> users = userDao.getAll();
         for (User user : users) {
             if (canUpgradeLevel(user)) {
+                System.out.println(user.getName());
                 upgradeLevel(user);
             }
         }

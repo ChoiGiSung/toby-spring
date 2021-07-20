@@ -43,5 +43,6 @@ public class ReflectionTest {
                 new Class[]{Hello.class},
                 new UppercaseHandler(new HelloTarget())
         );
+        assertThat("HELLO SAMPLE").isEqualTo(proxyInstance.sayHello("sample"));
     }
 }
