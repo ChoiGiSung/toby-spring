@@ -25,6 +25,17 @@ public class DaoFactory {
     }
 
     @Bean
+    TxProxyFactoryBean userServiceProxy() throws Exception {
+        TxProxyFactoryBean txProxyFactoryBean = new TxProxyFactoryBean();
+        txProxyFactoryBean.setManager(platformTransactionManager());
+        txProxyFactoryBean.setServiceInterface(UserService.class);
+        txProxyFactoryBean.setPattern("upgradeLevels");
+        txProxyFactoryBean.setTarget(userService());
+        return txProxyFactoryBean;
+    }
+
+
+    @Bean
     UserService userServiceTx(){
         return new UserServiceTx(userService(),platformTransactionManager());
     }

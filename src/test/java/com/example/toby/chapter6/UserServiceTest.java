@@ -128,6 +128,30 @@ public class UserServiceTest {
 //        verify(manager,times(1)).rollback(any());
     }
 
+    @Test
+    @DirtiesContext
+    void upgradeAllOrNothingProxy() throws Exception {
+        userDao.deleteAll();
+        for (User user : users) {
+            userDao.add(user);
+        }
+
+        TxProxyFactoryBean txProxyFactoryBean = context.getBean("&userServiceProxy", TxProxyFactoryBean.class);
+
+        txProxyFactoryBean.setTarget(testUserService);
+
+        UserService userService = (UserService) txProxyFactoryBean.getObject();
+        try {
+            userService.upgradeLevels();
+            fail("예외 왜 안터짐?");
+        } catch (TestUserServiceException e) {
+
+        }
+        assertThat(Level.BASIC).isEqualTo(users.get(0).getLevel());
+
+//        verify(manager,times(1)).rollback(any());
+    }
+
     private void checkLevelUpgraded(User user, boolean upgraded) {
         User updateUser = userDao.get(user.getId());
         if (upgraded) {
