@@ -4,8 +4,12 @@ import com.example.toby.chapter6.proxy.Hello;
 import com.example.toby.chapter6.proxy.HelloTarget;
 import com.example.toby.chapter6.proxy.HelloUppercase;
 import com.example.toby.chapter6.proxy.UppercaseHandler;
+import org.aopalliance.intercept.MethodInterceptor;
+import org.aopalliance.intercept.MethodInvocation;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.mockito.cglib.proxy.MethodProxy;
+import org.springframework.aop.framework.ProxyFactoryBean;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -44,5 +48,25 @@ public class ReflectionTest {
                 new UppercaseHandler(new HelloTarget())
         );
         assertThat("HELLO SAMPLE").isEqualTo(proxyInstance.sayHello("sample"));
+    }
+
+    @Test
+    void proxyFactoryBean(){
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(new HelloTarget());
+        pfBean.addAdvice(new UppercaseAdvice());
+
+        Hello hello = (Hello) pfBean.getObject();
+
+        assertThat("HELLO SAMPLE").isEqualTo(hello.sayHello("sample"));
+    }
+
+    static class UppercaseAdvice implements MethodInterceptor {
+
+        @Override
+        public Object invoke(MethodInvocation invocation) throws Throwable {
+            String ret = (String) invocation.proceed();
+            return ret.toUpperCase();
+        }
     }
 }
