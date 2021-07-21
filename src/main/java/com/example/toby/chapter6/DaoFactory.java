@@ -1,6 +1,7 @@
 package com.example.toby.chapter6;
 
 import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.NameMatchMethodPointcut;
 import org.springframework.context.annotation.Bean;
@@ -42,18 +43,19 @@ public class DaoFactory {
     UserService userServiceTx(){
         return new UserServiceTx(userService(),platformTransactionManager());
     }
-
-    @Bean
-    UserService testUserServiceTx(){
-        return new UserServiceTx(testUserService(),platformTransactionManager());
-    }
+//
+//    @Bean
+//    UserService testUserServiceTx(){
+//        return new UserServiceTx(testUserService(),platformTransactionManager());
+//    }
 
     @Bean
     public UserServiceImpl userService(){
         return new UserServiceImpl(userDao(),userLevelUpgradePolicy());
     }
+
     @Bean
-    public UserServiceImpl.TestUserService testUserService(){
+    public UserServiceImpl testUserService(){
         return new UserServiceImpl.TestUserService(userDao(),userLevelUpgradePolicy());
     }
 
@@ -92,26 +94,41 @@ public class DaoFactory {
         return advice;
     }
 
-    @Bean
-    public NameMatchMethodPointcut transactionPointcut(){
-        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
-        pointcut.setMappedName("upgrade*");
-        return pointcut;
-    }
+//    @Bean
+//    public NameMatchMethodPointcut transactionPointcut(){
+//        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+//        pointcut.setMappedName("upgrade*");
+//        return pointcut;
+//    }
 
     @Bean
     public DefaultPointcutAdvisor transactionAdvisor(){
         DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor();
         advisor.setAdvice(transactionAdvice());
-        advisor.setPointcut(transactionPointcut());
+        advisor.setPointcut(defaultAdvisorTransactionPointcut());
         return advisor;
     }
 
+//    @Bean
+//    public ProxyFactoryBean userServiceSpringProxy(){
+//        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
+//        proxyFactoryBean.addAdvisor(transactionAdvisor());
+//        return proxyFactoryBean;
+//    }
+
+    //빈 후처리기
     @Bean
-    public ProxyFactoryBean userServiceSpringProxy(){
-        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
-        proxyFactoryBean.addAdvisor(transactionAdvisor());
-        return proxyFactoryBean;
+    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
+        return new DefaultAdvisorAutoProxyCreator();
+    }
+
+    //포인트 컷
+    @Bean
+    public NameMatchClassMethodPointCut defaultAdvisorTransactionPointcut(){
+        NameMatchClassMethodPointCut pointCut = new NameMatchClassMethodPointCut();
+        pointCut.setMappedClassName("*ServiceImpl");
+        pointCut.setMappedName("upgrade*");
+        return pointCut;
     }
 
 }

@@ -1,16 +1,10 @@
 package com.example.toby.chapter6;
 
-import com.example.toby.chapter6.*;
-import com.example.toby.chapter6.mock.MockUserDao;
-import com.example.toby.chapter6.proxy.Hello;
-import com.example.toby.chapter6.proxy.HelloTarget;
-import com.example.toby.chapter6.proxy.UppercaseHandler;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mail.SimpleMailMessage;
@@ -37,11 +31,8 @@ public class UserServiceTest {
     @Autowired
     DataSource dataSource;
 
-    @Autowired
-    UserService testUserServiceTx;
-
-    @Autowired
-    UserService testUserService;
+//    @Autowired
+//    UserService testUserServiceTx;
 
     @Autowired
     ApplicationContext context;
@@ -53,6 +44,8 @@ public class UserServiceTest {
     UserDao userDao;
     List<User> users;
 
+    @Autowired
+    UserServiceImpl testUserService;
 
     @BeforeEach
     void setUp() {
@@ -156,29 +149,29 @@ public class UserServiceTest {
     }
 
 
-    @Test
-    @DirtiesContext
-    void upgradeAllOrNothingSpringProxy() throws Exception {
-        userDao.deleteAll();
-        for (User user : users) {
-            userDao.add(user);
-        }
-
-        ProxyFactoryBean proxyFactoryBean = context.getBean("&userServiceSpringProxy", ProxyFactoryBean.class);
-
-        proxyFactoryBean.setTarget(testUserService);
-
-        UserService userService = (UserService) proxyFactoryBean.getObject();
-        try {
-            userService.upgradeLevels();
-            fail("예외 왜 안터짐?");
-        } catch (TestUserServiceException e) {
-
-        }
-        assertThat(Level.BASIC).isEqualTo(users.get(0).getLevel());
-
-//        verify(manager,times(1)).rollback(any());
-    }
+//    @Test
+//    @DirtiesContext
+//    void upgradeAllOrNothingSpringProxy() throws Exception {
+//        userDao.deleteAll();
+//        for (User user : users) {
+//            userDao.add(user);
+//        }
+//
+//        ProxyFactoryBean proxyFactoryBean = context.getBean("&userServiceSpringProxy", ProxyFactoryBean.class);
+//
+//        proxyFactoryBean.setTarget(testUserService);
+//
+//        UserService userService = (UserService) proxyFactoryBean.getObject();
+//        try {
+//            userService.upgradeLevels();
+//            fail("예외 왜 안터짐?");
+//        } catch (TestUserServiceException e) {
+//
+//        }
+//        assertThat(Level.BASIC).isEqualTo(users.get(0).getLevel());
+//
+////        verify(manager,times(1)).rollback(any());
+//    }
 
     private void checkLevelUpgraded(User user, boolean upgraded) {
         User updateUser = userDao.get(user.getId());
@@ -187,6 +180,25 @@ public class UserServiceTest {
         } else {
             assertThat(user.getLevel()).isEqualTo(updateUser.getLevel());
         }
+    }
+
+
+    @Test
+    void upgradeAllOrNothingDefaultProxyCreator() throws Exception {
+        userDao.deleteAll();
+        for (User user : users) {
+            userDao.add(user);
+        }
+
+        try {
+            testUserService.upgradeLevels();
+            fail("예외 왜 안터짐?");
+        } catch (TestUserServiceException e) {
+
+        }
+        assertThat(Level.BASIC).isEqualTo(users.get(0).getLevel());
+
+//        verify(manager,times(1)).rollback(any());
     }
 
 }

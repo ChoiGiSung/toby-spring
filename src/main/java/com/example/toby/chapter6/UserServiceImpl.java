@@ -65,12 +65,14 @@ public class UserServiceImpl implements UserService {
         this.upgradePolicy = upgradePolicy;
     }
 
+
     public static class TestUserService extends UserServiceImpl {
 
         private String id = "4";
 
         public TestUserService( UserDao userDao, UserLevelUpgradePolicy upgradePolicy) {
             super(userDao, upgradePolicy);
+            System.out.println("엥");
         }
 
         @Override
