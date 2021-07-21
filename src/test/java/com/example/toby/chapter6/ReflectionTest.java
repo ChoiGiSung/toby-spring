@@ -10,6 +10,7 @@ import org.aopalliance.intercept.MethodInvocation;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.cglib.proxy.MethodProxy;
+import org.springframework.aop.Pointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.NameMatchMethodPointcut;
@@ -86,5 +87,41 @@ public class ReflectionTest {
         Hello proxiedHello = (Hello) pfBean.getObject();
 
         assertThat("HELLO SAMPLE").isEqualTo(proxiedHello.sayHello("sample"));
+    }
+
+    @Test
+    void classNamePointcutAdvisor(){
+        NameMatchMethodPointcut methodPointcut = new NameMatchMethodPointcut() {
+            @Override
+            public boolean matches(Method method, Class<?> targetClass) {
+                return targetClass.getSimpleName().startsWith("HelloT");
+                //클래스 선정
+            }
+        };
+
+        methodPointcut.setMappedName("sayH*"); //메소드 선정
+
+        checkAdvice(new HelloTarget(),methodPointcut,true);
+
+        class HelloWorld extends HelloTarget{};
+        checkAdvice(new HelloWorld(),methodPointcut,false);
+
+        class HelloTT extends HelloTarget{}
+        checkAdvice(new HelloTT(),methodPointcut,true);
+
+    }
+
+    private void checkAdvice(Object target, Pointcut pointcut,boolean advice){
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(target);
+        pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut,new UppercaseAdvice()));
+
+        Hello hello = (Hello) pfBean.getObject();
+
+        if(advice){
+            assertThat("HELLO SAMPLE").isEqualTo(hello.sayHello("sample"));
+        }else {
+            assertThat("Hello sample").isEqualTo(hello.sayHello("sample"));
+        }
     }
 }
