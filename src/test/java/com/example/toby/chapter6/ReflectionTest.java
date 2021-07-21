@@ -4,12 +4,15 @@ import com.example.toby.chapter6.proxy.Hello;
 import com.example.toby.chapter6.proxy.HelloTarget;
 import com.example.toby.chapter6.proxy.HelloUppercase;
 import com.example.toby.chapter6.proxy.UppercaseHandler;
+import org.aopalliance.aop.Advice;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.mockito.cglib.proxy.MethodProxy;
 import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -68,5 +71,20 @@ public class ReflectionTest {
             String ret = (String) invocation.proceed();
             return ret.toUpperCase();
         }
+    }
+
+    @Test
+    void pointcutAdvisor(){
+        ProxyFactoryBean pfBean = new ProxyFactoryBean();
+        pfBean.setTarget(new HelloTarget());
+
+        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+        pointcut.setMappedName("sayH*");
+
+        pfBean.addAdvisor(new DefaultPointcutAdvisor(pointcut,new UppercaseAdvice()));
+
+        Hello proxiedHello = (Hello) pfBean.getObject();
+
+        assertThat("HELLO SAMPLE").isEqualTo(proxiedHello.sayHello("sample"));
     }
 }
