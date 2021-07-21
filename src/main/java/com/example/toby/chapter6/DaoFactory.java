@@ -1,5 +1,8 @@
 package com.example.toby.chapter6;
 
+import org.springframework.aop.framework.ProxyFactoryBean;
+import org.springframework.aop.support.DefaultPointcutAdvisor;
+import org.springframework.aop.support.NameMatchMethodPointcut;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -81,5 +84,35 @@ public class DaoFactory {
         return new UserServiceImpl.TestUserService.MockMailSender();
     }
 
+
+    @Bean
+    public TransactionAdvice transactionAdvice(){
+        TransactionAdvice advice = new TransactionAdvice();
+        advice.setManager(platformTransactionManager());
+        return advice;
+    }
+
+    @Bean
+    public NameMatchMethodPointcut transactionPointcut(){
+        NameMatchMethodPointcut pointcut = new NameMatchMethodPointcut();
+        pointcut.setMappedName("upgrade*");
+        return pointcut;
+    }
+
+    @Bean
+    public DefaultPointcutAdvisor transactionAdvisor(){
+        DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor();
+        advisor.setAdvice(transactionAdvice());
+        advisor.setPointcut(transactionPointcut());
+        return advisor;
+    }
+
+    @Bean
+    public ProxyFactoryBean userServiceSpringProxy(){
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
+        proxyFactoryBean.addAdvisor(transactionAdvisor());
+        proxyFactoryBean.setTarget(userService());
+        return proxyFactoryBean;
+    }
 
 }
