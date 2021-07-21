@@ -111,7 +111,6 @@ public class DaoFactory {
     public ProxyFactoryBean userServiceSpringProxy(){
         ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
         proxyFactoryBean.addAdvisor(transactionAdvisor());
-        proxyFactoryBean.setTarget(userService());
         return proxyFactoryBean;
     }
 
