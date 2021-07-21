@@ -109,12 +109,13 @@ public class DaoFactory {
         return advisor;
     }
 
-//    @Bean
-//    public ProxyFactoryBean userServiceSpringProxy(){
-//        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
-//        proxyFactoryBean.addAdvisor(transactionAdvisor());
-//        return proxyFactoryBean;
-//    }
+    @Bean
+    public ProxyFactoryBean userServiceSpringProxy(){
+        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
+        proxyFactoryBean.setTarget(userService());
+        proxyFactoryBean.addAdvisor(transactionAdvisor());
+        return proxyFactoryBean;
+    }
 
     //빈 후처리기
     @Bean
@@ -126,7 +127,7 @@ public class DaoFactory {
     @Bean
     public NameMatchClassMethodPointCut defaultAdvisorTransactionPointcut(){
         NameMatchClassMethodPointCut pointCut = new NameMatchClassMethodPointCut();
-        pointCut.setMappedClassName("*ServiceImpl");
+        pointCut.setMappedClassName("*Service");
         pointCut.setMappedName("upgrade*");
         return pointCut;
     }

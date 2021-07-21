@@ -45,7 +45,7 @@ public class UserServiceTest {
     List<User> users;
 
     @Autowired
-    UserServiceImpl testUserService;
+    UserService testUserService;
 
     @BeforeEach
     void setUp() {
@@ -196,7 +196,9 @@ public class UserServiceTest {
         } catch (TestUserServiceException e) {
 
         }
-        assertThat(Level.BASIC).isEqualTo(users.get(0).getLevel());
+
+        System.out.println(testUserService.getClass());
+        assertThat(Level.BASIC).isEqualTo(userDao.get("2").getLevel());
 
 //        verify(manager,times(1)).rollback(any());
     }
