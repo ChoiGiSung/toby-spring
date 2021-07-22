@@ -1,7 +1,9 @@
 package com.example.toby.chapter6;
 
+import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.framework.ProxyFactoryBean;
 import org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator;
+import org.springframework.aop.support.AbstractExpressionPointcut;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.aop.support.NameMatchMethodPointcut;
 import org.springframework.context.annotation.Bean;
@@ -105,7 +107,7 @@ public class DaoFactory {
     public DefaultPointcutAdvisor transactionAdvisor(){
         DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor();
         advisor.setAdvice(transactionAdvice());
-        advisor.setPointcut(defaultAdvisorTransactionPointcut());
+        advisor.setPointcut(aspectJExpressionPointcut());
         return advisor;
     }
 
@@ -130,6 +132,14 @@ public class DaoFactory {
         pointCut.setMappedClassName("*Service");
         pointCut.setMappedName("upgrade*");
         return pointCut;
+    }
+
+    // 포인트 컷 표현식으로 기존 포인트 컷을 대체 -> 기존 포인트 컷은 매번 구현체를 만들어야 했다
+    @Bean
+    public AspectJExpressionPointcut aspectJExpressionPointcut(){
+        AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
+        pointcut.setExpression("execution(* *..*Service.upgrade*(..))");
+        return pointcut;
     }
 
 }
