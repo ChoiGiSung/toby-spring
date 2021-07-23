@@ -138,7 +138,7 @@ public class DaoFactory {
     @Bean
     public AspectJExpressionPointcut aspectJExpressionPointcut(){
         AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();
-        pointcut.setExpression("execution(* *..*Service.upgrade*(..))");
+        pointcut.setExpression("bean(*UserService)");
         return pointcut;
     }
 

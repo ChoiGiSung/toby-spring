@@ -10,6 +10,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Proxy;
@@ -26,7 +29,7 @@ import static org.mockito.Mockito.*;
 public class UserServiceTest {
 
     @Autowired
-    UserService userServiceTx;
+    UserService userService;
 
     @Autowired
     DataSource dataSource;
@@ -58,10 +61,6 @@ public class UserServiceTest {
         );
     }
 
-    @Test
-    void bean() {
-        assertThat(this.userServiceTx).isNotNull();
-    }
 
     @Test
     void upgradeLevels() throws Exception {
@@ -202,5 +201,31 @@ public class UserServiceTest {
 
 //        verify(manager,times(1)).rollback(any());
     }
+
+    @Test
+    @Transactional(readOnly = true)
+    void readOnly(){
+        testUserService.getAll();
+
+        System.out.println(testUserService.getClass());
+
+        System.out.println(userDao.get("1").getEmail());
+    }
+
+    @Test
+    void transactionSync(){
+        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
+        TransactionStatus status = manager.getTransaction(definition);
+
+        //모두 하나의 트랜젝션
+        userService.deleteAll();
+        userService.add(users.get(0));
+        userService.add(users.get(1));
+
+
+        manager.commit(status);
+    }
+
+
 
 }

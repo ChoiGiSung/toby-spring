@@ -4,6 +4,8 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+import java.util.List;
+
 public class UserServiceTx implements UserService{
 
     private UserService userService;
@@ -30,6 +32,26 @@ public class UserServiceTx implements UserService{
             transactionManager.rollback(status);
             throw e;
         }
+
+    }
+
+    @Override
+    public User get(String id) {
+        return null;
+    }
+
+    @Override
+    public List<User> getAll() {
+        return null;
+    }
+
+    @Override
+    public void update(User user) {
+
+    }
+
+    @Override
+    public void deleteAll() {
 
     }
 }

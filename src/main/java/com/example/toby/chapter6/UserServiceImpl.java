@@ -46,6 +46,26 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public User get(String id) {
+        return userDao.get(id);
+    }
+
+    @Override
+    public List<User> getAll() {
+        return userDao.getAll();
+    }
+
+    @Override
+    public void update(User user) {
+        userDao.update(user);
+    }
+
+    @Override
+    public void deleteAll() {
+        userDao.deleteAll();
+    }
+
     protected void upgradeLevel(User user) {
         upgradePolicy.upgradeLevel(user);
     }
@@ -82,6 +102,15 @@ public class UserServiceImpl implements UserService {
                 throw new TestUserServiceException();
             }
             super.upgradeLevel(user);
+        }
+
+        @Override
+        public List<User> getAll() {
+            for (User user : super.getAll()) {
+                user.setEmail("ads");
+                super.update(user);
+            }
+            return null;
         }
 
         public static class MockMailSender implements MailSender {
