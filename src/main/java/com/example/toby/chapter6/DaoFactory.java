@@ -103,27 +103,27 @@ public class DaoFactory {
 //        return pointcut;
 //    }
 
-    @Bean
-    public DefaultPointcutAdvisor transactionAdvisor(){
-        DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor();
-        advisor.setAdvice(transactionAdvice());
-        advisor.setPointcut(aspectJExpressionPointcut());
-        return advisor;
-    }
-
-    @Bean
-    public ProxyFactoryBean userServiceSpringProxy(){
-        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
-        proxyFactoryBean.setTarget(userService());
-        proxyFactoryBean.addAdvisor(transactionAdvisor());
-        return proxyFactoryBean;
-    }
+//    @Bean
+//    public DefaultPointcutAdvisor transactionAdvisor(){
+//        DefaultPointcutAdvisor advisor = new DefaultPointcutAdvisor();
+//        advisor.setAdvice(transactionAdvice());
+//        advisor.setPointcut(aspectJExpressionPointcut());
+//        return advisor;
+//    }
+//
+//    @Bean
+//    public ProxyFactoryBean userServiceSpringProxy(){
+//        ProxyFactoryBean proxyFactoryBean = new ProxyFactoryBean();
+//        proxyFactoryBean.setTarget(userService());
+//        proxyFactoryBean.addAdvisor(transactionAdvisor());
+//        return proxyFactoryBean;
+//    }
 
     //빈 후처리기
-    @Bean
-    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
-        return new DefaultAdvisorAutoProxyCreator();
-    }
+//    @Bean
+//    public DefaultAdvisorAutoProxyCreator defaultAdvisorAutoProxyCreator(){
+//        return new DefaultAdvisorAutoProxyCreator();
+//    }
 
     //포인트 컷
     @Bean
@@ -134,7 +134,7 @@ public class DaoFactory {
         return pointCut;
     }
 
-    // 포인트 컷 표현식으로 기존 포인트 컷을 대체 -> 기존 포인트 컷은 매번 구현체를 만들어야 했다
+//     포인트 컷 표현식으로 기존 포인트 컷을 대체 -> 기존 포인트 컷은 매번 구현체를 만들어야 했다
     @Bean
     public AspectJExpressionPointcut aspectJExpressionPointcut(){
         AspectJExpressionPointcut pointcut = new AspectJExpressionPointcut();

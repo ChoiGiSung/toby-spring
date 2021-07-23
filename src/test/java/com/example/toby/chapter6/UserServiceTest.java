@@ -213,17 +213,19 @@ public class UserServiceTest {
     }
 
     @Test
+    @Transactional
     void transactionSync(){
-        DefaultTransactionDefinition definition = new DefaultTransactionDefinition();
-        TransactionStatus status = manager.getTransaction(definition);
 
-        //모두 하나의 트랜젝션
-        userService.deleteAll();
-        userService.add(users.get(0));
-        userService.add(users.get(1));
+        System.out.println(this.getClass());
 
+        System.out.println(testUserService.getClass());
+        System.out.println(userService.getClass());
+        System.out.println(userDao.getClass());
 
-        manager.commit(status);
+        List<User> all = userService.getAll();
+        for (User user : all) {
+            System.out.println(user.getId());
+        }
     }
 
 
