@@ -13,6 +13,7 @@ import java.util.List;
 
 public class UserDaoJdbc implements UserDao {
 
+    private String sqlAdd;
     private JdbcTemplate template;
     private RowMapper<User> userRowMapper = new RowMapper<User>() {
         @Override
@@ -39,8 +40,7 @@ public class UserDaoJdbc implements UserDao {
     @Override
     public void add(final User user) {
         template.update(
-                "insert into users(id,name,password,level,login,recommend,email) " +
-                        "values(?,?,?,?,?,?,?)",user.getId(),user.getName(),user.getPassword(),user.getLevel().getValue(),
+                sqlAdd,user.getId(),user.getName(),user.getPassword(),user.getLevel().getValue(),
                         user.getLogin(),user.getRecommend(),user.getEmail());
 
     }
@@ -76,5 +76,7 @@ public class UserDaoJdbc implements UserDao {
         return template.queryForObject("select count(*) from users", Integer.class);
     }
 
-
+    public void setSqlAdd(String sqlAdd) {
+        this.sqlAdd = sqlAdd;
+    }
 }

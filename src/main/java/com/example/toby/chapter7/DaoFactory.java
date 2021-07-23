@@ -25,6 +25,7 @@ public class DaoFactory {
 
     @Bean
     public UserServiceImpl userService(){
+        System.out.println("ads");
         return new UserServiceImpl(userDao(),userLevelUpgradePolicy());
     }
 
@@ -42,7 +43,9 @@ public class DaoFactory {
 
     @Bean
     public UserDao userDao(){
-        return new UserDaoJdbc(dataSource());
+        UserDaoJdbc daoJdbc = new UserDaoJdbc(dataSource());
+        daoJdbc.setSqlAdd("insert into users(id,name,password,level,login,recommend,email) values(?,?,?,?,?,?,?)");
+        return daoJdbc;
     }
 
     @Bean
