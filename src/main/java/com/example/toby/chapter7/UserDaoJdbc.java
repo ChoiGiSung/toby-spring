@@ -10,11 +10,12 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 public class UserDaoJdbc implements UserDao {
 
-    private String sqlAdd;
     private JdbcTemplate template;
+    private Map<String,String> sqlMap;
     private RowMapper<User> userRowMapper = new RowMapper<User>() {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -40,43 +41,42 @@ public class UserDaoJdbc implements UserDao {
     @Override
     public void add(final User user) {
         template.update(
-                sqlAdd,user.getId(),user.getName(),user.getPassword(),user.getLevel().getValue(),
+                sqlMap.get("add"),user.getId(),user.getName(),user.getPassword(),user.getLevel().getValue(),
                         user.getLogin(),user.getRecommend(),user.getEmail());
 
     }
 
     public User get(String id) {
-        return template.queryForObject("select * from users where id =?",
+        return template.queryForObject(sqlMap.get("get"),
                 new Object[]{id}, userRowMapper
         );
     }
 
     public List<User> getAll() {
-        return this.template.query("select * from users order by id", userRowMapper);
+        return this.template.query(sqlMap.get("getAll"), userRowMapper);
     }
 
     public void deleteAll() {
         template.update(new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                return con.prepareStatement("delete from users");
+                return con.prepareStatement(sqlMap.get("deleteAll"));
             }
         });
     }
 
     public void update(User user){
         this.template.update(
-                "update users set name = ?,password=?,level=?,login=?, " +
-                        "recommend = ?, email = ? where id =?",user.getName(),user.getPassword(),
+                sqlMap.get("update"),user.getName(),user.getPassword(),
                 user.getLevel().getValue(),user.getLogin(),user.getRecommend(),user.getEmail(),user.getId()
         );
     }
 
     public int getCount() {
-        return template.queryForObject("select count(*) from users", Integer.class);
+        return template.queryForObject(sqlMap.get("getCount"), Integer.class);
     }
 
-    public void setSqlAdd(String sqlAdd) {
-        this.sqlAdd = sqlAdd;
+    public void setSqlMap(Map<String, String> sqlMap) {
+        this.sqlMap = sqlMap;
     }
 }

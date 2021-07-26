@@ -8,6 +8,8 @@ import org.springframework.mail.MailSender;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import javax.sql.DataSource;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 설정을 담당하는 class
@@ -44,7 +46,14 @@ public class DaoFactory {
     @Bean
     public UserDao userDao(){
         UserDaoJdbc daoJdbc = new UserDaoJdbc(dataSource());
-        daoJdbc.setSqlAdd("insert into users(id,name,password,level,login,recommend,email) values(?,?,?,?,?,?,?)");
+        Map<String,String> map = new HashMap<>();
+        map.put("add","insert into users(id,name,password,level,login,recommend,email) values(?,?,?,?,?,?,?)");
+        map.put("get","select * from users where id =?");
+        map.put("getAll","select * from users order by id");
+        map.put("deleteAll","delete from users");
+        map.put("update","update users set name = ?,password=?,level=?,login=?,recommend = ?, email = ? where id =?");
+        map.put("getCount","select count(*) from users");
+        daoJdbc.setSqlMap(map);
         return daoJdbc;
     }
 
