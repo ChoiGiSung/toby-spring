@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class UserDaoJdbc implements UserDao {
 
+    private SqlService sqlService;
     private JdbcTemplate template;
-    private Map<String,String> sqlMap;
     private RowMapper<User> userRowMapper = new RowMapper<User>() {
         @Override
         public User mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -41,42 +41,42 @@ public class UserDaoJdbc implements UserDao {
     @Override
     public void add(final User user) {
         template.update(
-                sqlMap.get("add"),user.getId(),user.getName(),user.getPassword(),user.getLevel().getValue(),
+                sqlService.getSql("userAdd"),user.getId(),user.getName(),user.getPassword(),user.getLevel().getValue(),
                         user.getLogin(),user.getRecommend(),user.getEmail());
 
     }
 
     public User get(String id) {
-        return template.queryForObject(sqlMap.get("get"),
+        return template.queryForObject(sqlService.getSql("userGet"),
                 new Object[]{id}, userRowMapper
         );
     }
 
     public List<User> getAll() {
-        return this.template.query(sqlMap.get("getAll"), userRowMapper);
+        return this.template.query(sqlService.getSql("userGetAll"), userRowMapper);
     }
 
     public void deleteAll() {
         template.update(new PreparedStatementCreator() {
             @Override
             public PreparedStatement createPreparedStatement(Connection con) throws SQLException {
-                return con.prepareStatement(sqlMap.get("deleteAll"));
+                return con.prepareStatement(sqlService.getSql("userDeleteAll"));
             }
         });
     }
 
     public void update(User user){
         this.template.update(
-                sqlMap.get("update"),user.getName(),user.getPassword(),
+                sqlService.getSql("userUpdate"),user.getName(),user.getPassword(),
                 user.getLevel().getValue(),user.getLogin(),user.getRecommend(),user.getEmail(),user.getId()
         );
     }
 
     public int getCount() {
-        return template.queryForObject(sqlMap.get("getCount"), Integer.class);
+        return template.queryForObject(sqlService.getSql("userGetCount"), Integer.class);
     }
 
-    public void setSqlMap(Map<String, String> sqlMap) {
-        this.sqlMap = sqlMap;
+    public void setSqlService(SqlService sqlService) {
+        this.sqlService = sqlService;
     }
 }

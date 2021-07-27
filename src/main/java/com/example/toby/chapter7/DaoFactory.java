@@ -46,15 +46,22 @@ public class DaoFactory {
     @Bean
     public UserDao userDao(){
         UserDaoJdbc daoJdbc = new UserDaoJdbc(dataSource());
-        Map<String,String> map = new HashMap<>();
-        map.put("add","insert into users(id,name,password,level,login,recommend,email) values(?,?,?,?,?,?,?)");
-        map.put("get","select * from users where id =?");
-        map.put("getAll","select * from users order by id");
-        map.put("deleteAll","delete from users");
-        map.put("update","update users set name = ?,password=?,level=?,login=?,recommend = ?, email = ? where id =?");
-        map.put("getCount","select count(*) from users");
-        daoJdbc.setSqlMap(map);
+        daoJdbc.setSqlService(sqlService());
         return daoJdbc;
+    }
+
+    @Bean
+    public SimpleSqlService sqlService(){
+        SimpleSqlService simpleSqlService = new SimpleSqlService();
+        Map<String,String> map = new HashMap<>();
+        map.put("userAdd","insert into users(id,name,password,level,login,recommend,email) values(?,?,?,?,?,?,?)");
+        map.put("userGet","select * from users where id =?");
+        map.put("userGetAll","select * from users order by id");
+        map.put("userDeleteAll","delete from users");
+        map.put("userUpdate","update users set name = ?,password=?,level=?,login=?,recommend = ?, email = ? where id =?");
+        map.put("userGetCount","select count(*) from users");
+        simpleSqlService.setSqlMap(map);
+        return simpleSqlService;
     }
 
     @Bean
