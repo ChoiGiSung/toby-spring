@@ -18,8 +18,18 @@ import java.util.Map;
 @Configuration
 public class DaoFactory {
 
-    // 여러 트랜젝션을 지원해 주기 위해 최상위의 트랜젝션 매니저를 사용
-    // jpa나 jta는 알맞게 리턴값을 변경하면 됨
+    @Bean
+    public DataSource dataSource(){
+        return new SingleConnectionDataSource(
+                "jdbc:h2:~/toby","sa","",true
+        );
+    }
+
+    @Bean
+    public MailSender mailSender(){
+        return new UserServiceImpl.TestUserService.MockMailSender();
+    }
+
     @Bean
     public PlatformTransactionManager platformTransactionManager(){
         return new DataSourceTransactionManager(dataSource());
@@ -65,15 +75,13 @@ public class DaoFactory {
     }
 
     @Bean
-    public DataSource dataSource(){
-        return new SingleConnectionDataSource(
-                "jdbc:h2:~/toby","sa","",true
-        );
+    public SqlService xmlSqlService(){
+        XmlSqlService xmlSqlService = new XmlSqlService();
+        xmlSqlService.setSqlReader(xmlSqlService);
+        xmlSqlService.setSqlRegistry(xmlSqlService);
+        return xmlSqlService;
     }
 
-    @Bean
-    public MailSender mailSender(){
-        return new UserServiceImpl.TestUserService.MockMailSender();
-    }
+
 
 }
