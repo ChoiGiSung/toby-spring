@@ -4,6 +4,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.mail.MailSender;
 import org.springframework.transaction.PlatformTransactionManager;
 
@@ -82,6 +84,12 @@ public class DaoFactory {
         return xmlSqlService;
     }
 
-
+    @Bean
+    public EmbeddedDatabase embeddedDatabase(){
+        EmbeddedDatabase database = new EmbeddedDatabaseBuilder()
+                .addScript("schema.sql")
+                .build();
+        return database;
+    }
 
 }
