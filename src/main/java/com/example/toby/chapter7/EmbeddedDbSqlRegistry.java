@@ -22,7 +22,7 @@ public class EmbeddedDbSqlRegistry implements UpdatableSqlRegistry{
     @Override
     public String findSql(String key) throws SqlNotFoundException {
         try{
-            return template.queryForObject("select sql_ from sqlmap where key_ = ?",String.class);
+            return template.queryForObject("select sql_ from sqlmap where key_ = ?",String.class,key);
         }catch (EmptyResultDataAccessException e){
             throw new SqlNotFoundException(key + "에 해당하는 SQL을 찾을 수 없습니다",e);
         }
