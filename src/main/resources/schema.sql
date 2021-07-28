@@ -4,3 +4,8 @@ create table USERS(
     name varchar(20) not null,
     password varchar(10) not null
 );
+
+create table SQLMAP(
+    KEY_ varchar(100) primary key ,
+    SQL_ varchar(100) not null
+);
