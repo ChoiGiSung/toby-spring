@@ -1,9 +1,15 @@
 package com.example.toby.chapter7;
 
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class EmbeddedDbSqlRegistryTest extends AbstractUpdatableSqlRegistryTest{
     EmbeddedDatabase embeddedDatabase;
@@ -23,5 +29,24 @@ public class EmbeddedDbSqlRegistryTest extends AbstractUpdatableSqlRegistryTest{
     @AfterEach
     void tearDown(){
         embeddedDatabase.shutdown();
+    }
+
+    @Test
+    void transactionalUpdate(){
+        checkFindResult("SQL1","SQL2","SQL3");
+
+        Map<String,String> sqlMap = new HashMap<>();
+        sqlMap.put("KEY1","수정");
+        sqlMap.put("KEㅇㅁㄴY1","수ㅁㄴㅇ정");
+
+        try {
+            sqlRegistry.updateSql(sqlMap);
+            fail();
+        }catch (SqlUpdateFailureException e){
+
+        }
+
+        checkFindResult("SQL1","SQL2","SQL3");
+
     }
 }
