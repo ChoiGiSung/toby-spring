@@ -9,7 +9,7 @@ public class Hello {
     }
 
     public String sayHello(){
-        return "Hello" + name;
+        return "Hello " + name;
     }
 
     public String getName() {
