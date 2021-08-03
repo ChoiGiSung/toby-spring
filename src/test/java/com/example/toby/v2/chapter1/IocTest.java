@@ -5,12 +5,18 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class IocTest {
+
+    String basePath = "static/config/";
 
     @Test
     void ioc_빈등록(){
@@ -72,5 +78,21 @@ class IocTest {
         hello.print();
 
         assertThat(context.getBean("printer").toString()).isEqualTo("Hello Spring");
+    }
+
+
+
+    @Test
+    void ioc_계층구조(){
+
+        ApplicationContext parent = new GenericXmlApplicationContext(basePath + "parentContext.xml");
+        GenericApplicationContext child = new GenericApplicationContext(parent);
+
+        XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(child);
+        reader.loadBeanDefinitions(basePath+"childContext.xml");
+        child.refresh();
+
+        Printer printer = child.getBean("printer", Printer.class);
+        assertThat(printer).isNotNull();
     }
 }
