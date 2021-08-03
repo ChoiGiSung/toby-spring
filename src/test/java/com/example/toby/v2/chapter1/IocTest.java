@@ -9,8 +9,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.context.support.GenericXmlApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -70,7 +68,7 @@ class IocTest {
         XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(context);
 
         reader.loadBeanDefinitions(
-                "static/HelloXML.xml"
+                "static/config/HelloXML.xml"
         );
         context.refresh();
 
