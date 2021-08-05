@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -34,4 +36,25 @@ public class ScopeTest {
         @Autowired SingletonBean bean2;
     }
 
+    @Test
+    void 프로토타입_스코프(){
+        ApplicationContext context = new AnnotationConfigApplicationContext(
+                PrototypeBean.class,PrototypeClientBean.class
+        );
+        Set<PrototypeBean> beans = new HashSet<>();
+
+        beans.add(context.getBean(PrototypeBean.class));
+        beans.add(context.getBean(PrototypeBean.class));
+        beans.add(context.getBean(PrototypeClientBean.class).bean1);
+        beans.add(context.getBean(PrototypeClientBean.class).bean2);
+
+        assertThat(beans.size()).isEqualTo(4);
+    }
+
+    @Scope("prototype")
+    static class PrototypeBean{}
+    static class PrototypeClientBean{
+        @Autowired PrototypeBean bean1;
+        @Autowired PrototypeBean bean2;
+    }
 }
