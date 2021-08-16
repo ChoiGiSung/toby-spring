@@ -23,4 +23,12 @@ class LevelPropertyEditorTest {
     public void initBinder(WebDataBinder binder){
         binder.registerCustomEditor(Level.class,new LevelPropertyEditor());
     }
+
+    @Test
+    void binderTest(){
+        WebDataBinder webDataBinder = new WebDataBinder(null);
+        webDataBinder.registerCustomEditor(Level.class,new LevelPropertyEditor());
+
+        assertThat(webDataBinder.convertIfNecessary("1",Level.class)).isEqualTo(Level.BASIC);
+    }
 }
